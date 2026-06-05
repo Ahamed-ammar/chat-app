@@ -1,6 +1,7 @@
 import express from "express"
 import cors from "cors"
 import helmet from "helmet"
+import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
 
@@ -12,6 +13,8 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/health', (req, res) => {
     res.status(200).json({ message: "health is good!!!" });
 });
+
+app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 3000;
 
