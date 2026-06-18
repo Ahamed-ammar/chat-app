@@ -4,6 +4,8 @@ import helmet from "helmet"
 import authRoutes from "./routes/authRoutes.js";
 import roomRoutes from "./routes/roomRoutes.js";
 import { authenticate } from "./middleware/authMiddleware.js";
+import http from 'http';
+import { setupSockets } from './sockets/index.js';
 
 const app = express();
 
@@ -19,8 +21,11 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', authenticate, roomRoutes);
 
+const server = http.createServer(app);
+setupSockets(server);
+
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
