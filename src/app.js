@@ -2,6 +2,8 @@ import express from "express"
 import cors from "cors"
 import helmet from "helmet"
 import authRoutes from "./routes/authRoutes.js";
+import roomRoutes from "./routes/roomRoutes.js";
+import { authenticate } from "./middleware/authMiddleware.js";
 
 const app = express();
 
@@ -15,6 +17,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/rooms', authenticate, roomRoutes);
 
 const PORT = process.env.PORT || 3000;
 
