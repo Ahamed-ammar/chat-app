@@ -7,6 +7,7 @@ const router = express.Router();
 // Room routes
 router.post('/', roomController.createRoom);
 router.get('/', roomController.getRooms);
+router.post('/direct', roomController.getOrCreateDirectRoom);
 router.post('/:id/join', roomController.joinRoom);
 
 // Message routes

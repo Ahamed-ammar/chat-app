@@ -24,7 +24,8 @@ const register = async (email, password, username) => {
     const token = jwt.sign(
         {
             id: user.id,
-            email: user.email
+            email: user.email,
+            username: user.username
         },
         process.env.JWT_SECRET,
         {
@@ -59,7 +60,8 @@ const login = async (email, password) => {
     const token = jwt.sign(
         {
             id: user.id,
-            email: user.email
+            email: user.email,
+            username: user.username
         },
         process.env.JWT_SECRET,
         {

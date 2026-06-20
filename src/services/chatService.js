@@ -6,9 +6,28 @@ export const createRoom = async (name) => {
     });
 };
 
-export const getRooms = async () => {
+export const getRooms = async (userId) => {
     return await prisma.chatRoom.findMany({
-        orderBy: { createdAt: 'desc' }
+        where: {
+            members: {
+                some: { userId }
+            }
+        },
+        orderBy: { createdAt: 'desc' },
+        include: {
+            members: {
+                include: {
+                    user: { select: { id: true, username: true } }
+                }
+            },
+            messages: {
+                orderBy: { createdAt: 'desc' },
+                take: 1,
+                include: {
+                    sender: { select: { id: true, username: true } }
+                }
+            }
+        }
     });
 };
 
@@ -47,6 +66,59 @@ export const sendMessage = async (userId, roomId, content) => {
             }
         }
     });
+};
+
+export const getOrCreateDirectRoom = async (userIdA, userIdB) => {
+    // Look for an existing DM room between exactly these two users
+    const existing = await prisma.chatRoom.findFirst({
+        where: {
+            isDirect: true,
+            AND: [
+                { members: { some: { userId: userIdA } } },
+                { members: { some: { userId: userIdB } } },
+            ]
+        },
+        include: {
+            members: {
+                include: { user: { select: { id: true, username: true } } }
+            },
+            messages: {
+                orderBy: { createdAt: 'desc' },
+                take: 1,
+                include: { sender: { select: { id: true, username: true } } }
+            }
+        }
+    });
+
+    // Strictly validate it's a 2-member room (not a group that happens to include both)
+    if (existing && existing.members.length === 2) {
+        return existing;
+    }
+
+    const room = await prisma.chatRoom.create({
+        data: {
+            name: `dm_${userIdA}_${userIdB}`,
+            isDirect: true,
+            members: {
+                create: [
+                    { userId: userIdA },
+                    { userId: userIdB }
+                ]
+            }
+        },
+        include: {
+            members: {
+                include: { user: { select: { id: true, username: true } } }
+            },
+            messages: {
+                orderBy: { createdAt: 'desc' },
+                take: 1,
+                include: { sender: { select: { id: true, username: true } } }
+            }
+        }
+    });
+
+    return room;
 };
 
 export const getMessages = async (roomId, cursor, limit = 20) => {

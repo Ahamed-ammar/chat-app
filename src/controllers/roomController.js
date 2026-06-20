@@ -14,9 +14,30 @@ export const createRoom = async (req, res) => {
     }
 };
 
+export const getOrCreateDirectRoom = async (req, res) => {
+    try {
+        const userIdA = req.user.id;
+        const { targetUserId } = req.body;
+
+        if (!targetUserId) {
+            return res.status(400).json({ message: "targetUserId is required" });
+        }
+        if (targetUserId === userIdA) {
+            return res.status(400).json({ message: "Cannot create a direct room with yourself" });
+        }
+
+        const room = await chatService.getOrCreateDirectRoom(userIdA, targetUserId);
+        res.status(200).json(room);
+    } catch (error) {
+        console.error("getOrCreateDirectRoom error:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 export const getRooms = async (req, res) => {
     try {
-        const rooms = await chatService.getRooms();
+        const userId = req.user.id;
+        const rooms = await chatService.getRooms(userId);
         res.status(200).json(rooms);
     } catch (error) {
         console.error("getRooms error:", error);

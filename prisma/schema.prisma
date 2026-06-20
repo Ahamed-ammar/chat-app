@@ -20,6 +20,7 @@ model User {
 model ChatRoom {
   id        String       @id @default(uuid())
   name      String
+  isDirect  Boolean      @default(false)
   createdAt DateTime     @default(now())
   messages  Message[]
   members   RoomMember[]

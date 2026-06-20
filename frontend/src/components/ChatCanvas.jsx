@@ -44,13 +44,17 @@ const ChatCanvas = ({ activeRoom, messages, onSendMessage, typingUsers }) => {
                 <div className="flex items-center gap-3">
                     <div className="relative">
                         <div className="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold uppercase text-lg">
-                            {activeRoom.name.charAt(0)}
+                            {(activeRoom.dmPartnerName || activeRoom.name).charAt(0)}
                         </div>
                         <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-tertiary border-2 border-white rounded-full"></div>
                     </div>
                     <div>
-                        <h2 className="font-headline-md text-headline-md font-bold text-primary">{activeRoom.name}</h2>
-                        <span className="text-label-xs font-label-xs text-tertiary">Online</span>
+                        <h2 className="font-headline-md text-headline-md font-bold text-primary">
+                            {activeRoom.dmPartnerName || activeRoom.name}
+                        </h2>
+                        <span className="text-label-xs font-label-xs text-tertiary">
+                            {activeRoom.isDirect ? 'Direct Message' : 'Online'}
+                        </span>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">

@@ -3,6 +3,7 @@ import cors from "cors"
 import helmet from "helmet"
 import authRoutes from "./routes/authRoutes.js";
 import roomRoutes from "./routes/roomRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import { authenticate } from "./middleware/authMiddleware.js";
 import http from 'http';
 import { setupSockets } from './sockets/index.js';
@@ -20,6 +21,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/rooms', authenticate, roomRoutes);
+app.use('/api/users', authenticate, userRoutes);
 
 const server = http.createServer(app);
 setupSockets(server);
