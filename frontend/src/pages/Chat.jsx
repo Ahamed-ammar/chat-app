@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 import { useSocket } from '../context/SocketContext';
 import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/Sidebar';
@@ -22,6 +23,7 @@ const enrichRoom = (room, currentUserId) => {
 const Chat = () => {
     const { token, user } = useAuth();
     const { socket } = useSocket();
+    const { state: locationState } = useLocation();
     const [rooms, setRooms] = useState([]);
     const [activeRoomId, setActiveRoomId] = useState(null);
     const [messages, setMessages] = useState({});
@@ -146,6 +148,19 @@ const Chat = () => {
         }
     }, []); // no deps — always stable
 
+    // Open room passed via navigation state (from Groups/Dashboard)
+    const openedFromNav = useRef(false);
+    useEffect(() => {
+        if (openedFromNav.current) return;
+        if (locationState?.openRoomId && rooms.length > 0) {
+            const target = rooms.find(r => r.id === locationState.openRoomId);
+            if (target) {
+                openedFromNav.current = true;
+                handleSelectRoom(locationState.openRoomId);
+            }
+        }
+    }, [locationState, rooms]); // handleSelectRoom is stable (no deps), safe to omit
+
     const handleCreateRoom = async (name) => {
         try {
             const res = await axios.post('/api/rooms', { name }, {
@@ -163,6 +178,19 @@ const Chat = () => {
         if (!activeRoomId || !socket) return;
         socket.emit('send_message', { roomId: activeRoomId, content });
     };
+
+    // Called from ChatCanvas > AddMemberModal when a contact is added to the room
+    const handleRoomMemberAdded = useCallback((roomId, contact) => {
+        setRooms(prev =>
+            prev.map(r => {
+                if (r.id !== roomId) return r;
+                const newMember = { userId: contact.id, user: contact };
+                const alreadyIn = r.members?.some(m => (m.user?.id ?? m.userId) === contact.id);
+                if (alreadyIn) return r;
+                return { ...r, members: [...(r.members ?? []), newMember] };
+            })
+        );
+    }, []);
 
     // Called from AddContactModal once the DM room is returned from the server
     const handleStartDirectChat = useCallback((room, partnerUser) => {
@@ -201,6 +229,7 @@ const Chat = () => {
                     messages={activeMessages}
                     onSendMessage={handleSendMessage}
                     typingUsers={typingUsers[activeRoomId]}
+                    onRoomMemberAdded={handleRoomMemberAdded}
                 />
             </div>
             {showAddContact && (

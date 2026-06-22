@@ -1,43 +1,95 @@
 import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+
+const NAV = [
+    { icon: 'chat_bubble', label: 'Chats',    path: '/',         fill: true  },
+    { icon: 'group',       label: 'Groups',   path: '/groups',   fill: false },
+    { icon: 'view_quilt',  label: 'Dashboard',path: '/dashboard',fill: false },
+];
 
 const Sidebar = () => {
     const { logout, user } = useAuth();
+    const navigate = useNavigate();
+    const { pathname } = useLocation();
+
+    const isActive = (path) =>
+        path === '/' ? pathname === '/' : pathname.startsWith(path);
 
     return (
-        <nav className="bg-surface-container-lowest w-sidebar_width h-full flex flex-col items-center py-6 gap-8 border-r border-outline-variant z-20">
-            <div className="font-display-lg text-display-lg text-primary">
-                <span className="material-symbols-outlined text-4xl">cloud</span>
-            </div>
-            
-            <div className="flex flex-col gap-6 items-center w-full flex-1">
-                {/* Chats (Active) */}
-                <button className="w-12 h-12 flex items-center justify-center text-primary bg-surface-container-high rounded-xl transition-transform hover:bg-surface-container">
-                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>chat_bubble</span>
-                </button>
-                {/* Contacts */}
-                <button className="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-xl">
-                    <span className="material-symbols-outlined">group</span>
-                </button>
-                {/* Workspace */}
-                <button className="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-xl">
-                    <span className="material-symbols-outlined">view_quilt</span>
-                </button>
+        <nav className="bg-surface-container-lowest w-sidebar_width h-full flex flex-col items-center py-6 gap-8 border-r border-outline-variant z-20 flex-shrink-0">
+            {/* Logo */}
+            <div className="text-primary">
+                <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    chat_bubble
+                </span>
             </div>
 
-            <div className="mt-auto flex flex-col gap-6 items-center">
-                <button 
+            {/* Primary nav */}
+            <div className="flex flex-col gap-2 items-center w-full flex-1">
+                {NAV.map(({ icon, label, path, fill }) => {
+                    const active = isActive(path);
+                    return (
+                        <button
+                            key={path}
+                            title={label}
+                            onClick={() => navigate(path)}
+                            className={`w-12 h-12 flex items-center justify-center rounded-xl transition-all ${
+                                active
+                                    ? 'text-primary bg-surface-container-high scale-95'
+                                    : 'text-on-surface-variant hover:text-primary hover:bg-surface-container'
+                            }`}
+                        >
+                            <span
+                                className="material-symbols-outlined"
+                                style={active && fill ? { fontVariationSettings: "'FILL' 1" } : {}}
+                            >
+                                {icon}
+                            </span>
+                        </button>
+                    );
+                })}
+            </div>
+
+            {/* Bottom actions */}
+            <div className="flex flex-col gap-2 items-center">
+                <button
+                    title="Settings"
+                    onClick={() => navigate('/settings')}
+                    className={`w-12 h-12 flex items-center justify-center rounded-xl transition-all ${
+                        isActive('/settings')
+                            ? 'text-primary bg-surface-container-high'
+                            : 'text-on-surface-variant hover:text-primary hover:bg-surface-container'
+                    }`}
+                >
+                    <span
+                        className="material-symbols-outlined"
+                        style={isActive('/settings') ? { fontVariationSettings: "'FILL' 1" } : {}}
+                    >
+                        settings
+                    </span>
+                </button>
+
+                <button
+                    title="Logout"
                     onClick={logout}
-                    className="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-error transition-colors hover:bg-error-container/20 rounded-xl"
-                    title="Logout">
+                    className="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error-container/20 rounded-xl transition-all"
+                >
                     <span className="material-symbols-outlined">logout</span>
                 </button>
-                <button className="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container rounded-xl">
-                    <span className="material-symbols-outlined">settings</span>
-                </button>
-                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold border-2 border-primary-container uppercase">
+
+                {/* Avatar → profile */}
+                <button
+                    title="Profile"
+                    onClick={() => navigate('/profile')}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm uppercase transition-all ring-2 ${
+                        isActive('/profile')
+                            ? 'bg-primary text-white ring-primary'
+                            : 'bg-primary-fixed text-primary ring-primary-fixed hover:ring-primary'
+                    }`}
+                >
                     {user?.username?.charAt(0) || user?.email?.charAt(0) || 'U'}
-                </div>
+                </button>
             </div>
         </nav>
     );

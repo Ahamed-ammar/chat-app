@@ -88,3 +88,7 @@ uploads/
 
 *.swp
 *.swo
+
+# Project Documentation (local only)
+
+DOCUMENTATION.md

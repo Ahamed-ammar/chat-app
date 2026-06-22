@@ -6,7 +6,7 @@ export const createRoom = async (req, res) => {
         if (!name) {
             return res.status(400).json({ message: "Room name is required" });
         }
-        const room = await chatService.createRoom(name);
+        const room = await chatService.createRoom(name, req.user.id);
         res.status(201).json(room);
     } catch (error) {
         console.error("createRoom error:", error);
@@ -59,5 +59,26 @@ export const joinRoom = async (req, res) => {
     } catch (error) {
         console.error("joinRoom error:", error);
         res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+export const addMember = async (req, res) => {
+    try {
+        const { id: roomId } = req.params;
+        const requesterId = req.user.id;
+        const { userId: targetUserId } = req.body;
+
+        if (!targetUserId) {
+            return res.status(400).json({ message: "userId is required" });
+        }
+
+        const member = await chatService.addMemberToRoom(roomId, requesterId, targetUserId);
+        res.status(201).json(member);
+    } catch (error) {
+        console.error("addMember error:", error);
+        const status = error.message.includes('not found') ? 404
+            : error.message.includes('Cannot add') || error.message.includes('only add') || error.message.includes('already') ? 400
+            : 500;
+        res.status(status).json({ message: error.message });
     }
 };

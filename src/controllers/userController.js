@@ -1,4 +1,5 @@
 import prisma from '../config/prismaConfig.js';
+import * as chatService from '../services/chatService.js';
 
 export const searchUsers = async (req, res) => {
     try {
@@ -28,6 +29,16 @@ export const searchUsers = async (req, res) => {
         res.status(200).json(users);
     } catch (error) {
         console.error('searchUsers error:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const getContacts = async (req, res) => {
+    try {
+        const contacts = await chatService.getContacts(req.user.id);
+        res.status(200).json(contacts);
+    } catch (error) {
+        console.error('getContacts error:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 };
