@@ -9,6 +9,7 @@ reference/
 .env.local
 .env.development
 .env.production
+.md
 
 # Logs
 
