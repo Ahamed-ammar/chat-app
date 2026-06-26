@@ -92,3 +92,5 @@ uploads/
 # Project Documentation (local only)
 
 DOCUMENTATION.md
+SPRING_BOOT_MIGRATION.md
+PROJECT_GUIDE.md

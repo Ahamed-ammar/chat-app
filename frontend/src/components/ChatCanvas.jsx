@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import AddMemberModal from './AddMemberModal';
 
-const ChatCanvas = ({ activeRoom, messages, onSendMessage, typingUsers, onRoomMemberAdded }) => {
+const ChatCanvas = ({ activeRoom, messages, onSendMessage, onTyping, typingUsers, onRoomMemberAdded }) => {
     const [newMessage, setNewMessage] = useState('');
     const [showAddMember, setShowAddMember] = useState(false);
     const { user } = useAuth();
@@ -147,7 +147,10 @@ const ChatCanvas = ({ activeRoom, messages, onSendMessage, typingUsers, onRoomMe
                     </button>
                     <input
                         value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
+                        onChange={(e) => {
+                            setNewMessage(e.target.value);
+                            onTyping?.();
+                        }}
                         className="flex-1 bg-transparent border-none focus:ring-0 text-body-sm py-2 outline-none"
                         placeholder="Type a message..."
                         type="text"
