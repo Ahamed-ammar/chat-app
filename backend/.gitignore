@@ -1,0 +1,64 @@
+# ── Maven build output ─────────────────────────────────────────────────────────
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ── Maven wrapper ──────────────────────────────────────────────────────────────
+.mvn/wrapper/maven-wrapper.properties
+
+# ── Compiled class files ───────────────────────────────────────────────────────
+*.class
+
+# ── Packaged archives ──────────────────────────────────────────────────────────
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+logs/
+*.log
+spring.log
+
+# ── Spring Boot DevTools ───────────────────────────────────────────────────────
+.spring-boot-devtools.properties
+
+# ── IntelliJ IDEA ─────────────────────────────────────────────────────────────
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# ── Eclipse ───────────────────────────────────────────────────────────────────
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+
+# ── VS Code ───────────────────────────────────────────────────────────────────
+.vscode/
+
+# ── NetBeans ──────────────────────────────────────────────────────────────────
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# ── OS files ──────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Sensitive config — never commit real secrets ──────────────────────────────
+# application-prod.properties and application-local.properties often contain
+# real DB passwords and JWT secrets. Keep them local only.
+src/main/resources/application-local.properties
+src/main/resources/application-prod.properties
+src/main/resources/application-secrets.properties
